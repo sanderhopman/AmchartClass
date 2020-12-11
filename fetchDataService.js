@@ -14,9 +14,8 @@ let testdata = [
     }
   ];
 
-let insideTempChart = new LineChart('insideTempChart');
-insideTempChart.loadData(testdata);
-let outsideTempChart = new LineChart('outsideTempChart');
+let insideTempChart = new LineChart('insideTempChart', 't_indoor_value');
+let outsideTempChart = new LineChart('outsideTempChart', 't_value');
 
 
 const baseURL = config.CLOUDSTATION_PROJECT_URL;
@@ -24,6 +23,7 @@ const baseURL = config.CLOUDSTATION_PROJECT_URL;
 (function fetchSensorData() {
     // Fetch and prepare data -------------------------------------
     fetchChartDataFromDB(baseURL, 180).then(data => {
+        insideTempChart.loadData(data);
         outsideTempChart.loadData(data); // The dates have to be reversed to be able to scroll the graph (.reverse() )
     })
 })();
