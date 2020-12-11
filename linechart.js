@@ -1,7 +1,8 @@
 class LineChart {
 
-    constructor(chartName) {
-      this.chartName = chartName;
+    constructor(chartName, sensorValueName) {
+      this.chartName = String(chartName);
+      this.sensorValueName = String(sensorValueName);
       this.createChart();
       this.createAxis();
       this.createCursor();
@@ -67,10 +68,10 @@ class LineChart {
       this.series.fill = am4core.color("white");
       this.series.segments.template.fillModifier = this.fillModifier;
       this.series.stroke = am4core.color("white");
-      this.series.dataFields.valueY = "t_value"; 
+      this.series.dataFields.valueY = this.sensorValueName; 
       this.series.dataFields.dateX = "date";
       this.series.name = this.chartName;
-      this.series.tooltipText = "[bold]{t_value}[/]";
+      this.series.tooltipText = "[bold]{valueY}[/]";
     }
 
     loadData(data) {
