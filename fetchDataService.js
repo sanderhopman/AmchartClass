@@ -49,7 +49,11 @@ function convertDateAndFillDataArray(data) {
                 date:date,
                 t_value: data[i].value.temperature,
                 h_value: data[i].value.humidity,
-                p_value: data[i].value.pressure
+                p_value: data[i].value.pressure,
+                t_indoor_value: data[i].value.temperature_indoor,
+                h_indoor_value: data[i].value.humidity_indoor,
+                p_indoor_value: data[i].value.pressure_indoor,
+                g_indoor_value: data[i].value.gasResistance_indoor
             });
         }
     }
