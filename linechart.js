@@ -1,77 +1,89 @@
 class LineChart {
 
-    constructor(chartName, sensorValueName) {
-      this.chartName = String(chartName);
-      this.sensorValueName = String(sensorValueName);
-      this.createChart();
-      this.createAxis();
-      this.createCursor();
-      this.createFillModifier();
-      this.createSeries();
+    constructor(chartID, valueName, chartTitle) {
+      let chart = this.createChart(chartID);
+      this.createDateAxis(chart);
+      this.createValueAxis(chart);
+      chart.cursor = this.createCursor();
+      this.createSeries(chart, valueName);
+      this.createChartTitle(chart, chartTitle);
+      this.chart = chart;
     }
   
-    createChart() {
+    createChart(chartID) {
       // Themes begin
       am4core.useTheme(am4themes_animated);
+      am4core.useTheme(am4themes_dark);
       // Themes end
   
       // Create chart instance
-      this.chart = am4core.create(this.chartName, am4charts.XYChart);
+      return am4core.create(chartID, am4charts.XYChart);
     }
 
-    createAxis() {
+    createDateAxis(chart) {
       // Create axes
-      this.dateAxis = this.chart.xAxes.push(new am4charts.DateAxis());
-      this.dateAxis.baseInterval = {
+      var dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+      dateAxis.baseInterval = {
         "timeUnit": "second",
         "count": 1
       };
-      this.dateAxis.renderer.labels.template.fill = am4core.color("white");
-      
-      this.valueAxis = this.chart.yAxes.push(new am4charts.ValueAxis());
-      this.valueAxis.renderer.labels.template.fill = am4core.color("white");
-      this.dateAxis.renderer.grid.template.disabled = true;
-      this.valueAxis.renderer.grid.template.disabled = true;
+      dateAxis.renderer.labels.template.fill = am4core.color("white");
+      dateAxis.renderer.grid.template.disabled = true;
+      dateAxis.cursorTooltipEnabled = false;
+    }
+
+    createValueAxis(chart) {
+      var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+      valueAxis.renderer.labels.template.fill = am4core.color("white");
+      valueAxis.renderer.grid.template.disabled = true;
   
       // Hide cursor labels
-      this.valueAxis.cursorTooltipEnabled = false;
-      this.dateAxis.cursorTooltipEnabled = false;
+      valueAxis.cursorTooltipEnabled = false;
     }
 
     createCursor() {
       //cursor (is needed to be able to display a tooltip, will not work without)
-      this.chart.cursor = new am4charts.XYCursor();
-      this.chart.cursor.xAxis = this.dateAxis;
-      this.chart.cursor.fullWidthLineX = true;
-      this.chart.cursor.lineX.strokeWidth = 1;
-      this.chart.cursor.lineY.strokeWidth = 1;
-      this.chart.cursor.lineX.fill = am4core.color("#8F3985");
-      this.chart.cursor.lineX.fillOpacity = 0.1;
-      this.chart.cursor.lineX.disabled = true;
-      this.chart.cursor.lineY.disabled = true;
+      let cursor = new am4charts.XYCursor();
+      cursor.xAxis = this.dateAxis;
+      cursor.fullWidthLineX = true;
+      cursor.lineX.strokeWidth = 1;
+      cursor.lineY.strokeWidth = 1;
+      cursor.lineX.fill = am4core.color("#8F3985");
+      cursor.lineX.fillOpacity = 0.1;
+      cursor.lineX.disabled = true;
+      cursor.lineY.disabled = true;
+      return cursor;
+    }
+
+    createSeries(chart, valueName) {
+      // Create series
+      let series = chart.series.push(new am4charts.LineSeries());
+      series.tensionX = 0.8;
+      series.strokeWidth = 3;
+      series.fillOpacity = 0.2;
+      series.fill = am4core.color("white");
+      series.segments.template.fillModifier = this.createFillModifier();
+      series.stroke = am4core.color("white");
+      series.dataFields.valueY = valueName; 
+      series.dataFields.dateX = "date";
+      // this.series.name = this.chartID;
+      series.tooltipText = "[bold]{valueY}[/]";
     }
 
     createFillModifier() {
       // Create linear gradient
-      this.fillModifier = new am4core.LinearGradientModifier();
-      this.fillModifier.opacities = [1, 0];
-      this.fillModifier.offsets = [0, 1];
-      this.fillModifier.gradient.rotation = 90;
+      let fillModifier = new am4core.LinearGradientModifier();
+      fillModifier.opacities = [1, 0];
+      fillModifier.offsets = [0, 1];
+      fillModifier.gradient.rotation = 90;
+      return fillModifier;
     }
 
-    createSeries() {
-      // Create series
-      this.series = this.chart.series.push(new am4charts.LineSeries());
-      this.series.tensionX = 0.8;
-      this.series.strokeWidth = 3;
-      this.series.fillOpacity = 0.2;
-      this.series.fill = am4core.color("white");
-      this.series.segments.template.fillModifier = this.fillModifier;
-      this.series.stroke = am4core.color("white");
-      this.series.dataFields.valueY = this.sensorValueName; 
-      this.series.dataFields.dateX = "date";
-      this.series.name = this.chartName;
-      this.series.tooltipText = "[bold]{valueY}[/]";
+    createChartTitle(chart, chartTitle) {
+      var title = chart.titles.create();
+      title.text = chartTitle;
+      title.fontSize = 25;
+      title.marginBottom = 30;
     }
 
     loadData(data) {
