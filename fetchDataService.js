@@ -14,8 +14,10 @@ let testdata = [
     }
   ];
 
-let insideTempChart = new LineChart('insideTempChart', 't_indoor_value');
-let outsideTempChart = new LineChart('outsideTempChart', 't_value');
+let insideTempChart = new LineChart('insideTempChart', 't_indoor_value', 'Indoor temperature');
+let outsideTempChart = new LineChart('outsideTempChart', 't_value', 'Outdoor temperature');
+let pressureChart = new LineChart('pressureChart', 'p_value', 'Barometric pressure');
+let outsideHumChart = new LineChart('outsideHumChart', 'h_value', 'Outdoor humidity');
 
 
 const baseURL = config.CLOUDSTATION_PROJECT_URL;
@@ -24,6 +26,8 @@ const baseURL = config.CLOUDSTATION_PROJECT_URL;
     // Fetch and prepare data -------------------------------------
     fetchChartDataFromDB(baseURL, 180).then(data => {
         insideTempChart.loadData(data);
+        pressureChart.loadData(data);
+        outsideHumChart.loadData(data);
         outsideTempChart.loadData(data); // The dates have to be reversed to be able to scroll the graph (.reverse() )
     })
 })();
